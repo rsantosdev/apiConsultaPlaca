@@ -58,7 +58,7 @@ namespace ConsultaVeiculos
                    int nErros = 0;
                
                         Uri urlpost = new Uri("http://sinespcidadao.sinesp.gov.br/sinesp-cidadao/ConsultaPlacaNovo27032014");
-                        HttpWebRequest httpPostConsultaNFe = (HttpWebRequest)HttpWebRequest.Create(urlpost);
+                        HttpWebRequest httpPostConsulta = (HttpWebRequest)HttpWebRequest.Create(urlpost);
                         string key = chave;
                         System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
                         byte[] keyByte = encoding.GetBytes(key);
@@ -91,21 +91,21 @@ namespace ConsultaVeiculos
 
                         byte[] buffer2 = Encoding.ASCII.GetBytes(postConsultaComParametros.ToString());
 
-                        httpPostConsultaNFe.CookieContainer = cookies;
-                        httpPostConsultaNFe.Timeout = 900000;
-                        httpPostConsultaNFe.ContentType = "text/xml;charset=UTF-8";
-                        httpPostConsultaNFe.Method = "POST";
-                        httpPostConsultaNFe.ContentLength = buffer2.Length;
+                        httpPostConsulta.CookieContainer = cookies;
+                        httpPostConsulta.Timeout = 900000;
+                        httpPostConsulta.ContentType = "text/xml;charset=UTF-8";
+                        httpPostConsulta.Method = "POST";
+                        httpPostConsulta.ContentLength = buffer2.Length;
 
 
-                        Stream PostData = httpPostConsultaNFe.GetRequestStream();
+                        Stream PostData = httpPostConsulta.GetRequestStream();
                         PostData.Write(buffer2, 0, buffer2.Length);
                         PostData.Close();
 
 
 
 
-                        HttpWebResponse responsePost = (HttpWebResponse)httpPostConsultaNFe.GetResponse();
+                        HttpWebResponse responsePost = (HttpWebResponse)httpPostConsulta.GetResponse();
                         Stream istreamPost = responsePost.GetResponseStream();
                         StreamReader strRespotaUrlConsultaNFe = new StreamReader(istreamPost, Encoding.Default);
 
