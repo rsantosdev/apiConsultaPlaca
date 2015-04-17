@@ -16,8 +16,10 @@ namespace ConsultaVeiculos
     {
        int numero = 0;
         public ConsultaPlacaVeiculo() { }
+        //Chave Secreta para uso do servico
         private String chave = "shienshenlhq";
        private CookieContainer cookies = new CookieContainer();
+        //Remove acentos do xml no retorno do resultado
         private string RemoverAcentos(string texto)
         {
             string s = texto.Normalize(NormalizationForm.FormD);
@@ -46,58 +48,10 @@ namespace ConsultaVeiculos
         }
         
        
-        private String retorno(string cod, string msg, string situacao, string placa, string marca, string modelo, string AnoModelo, string AnoFabricacao, string cor, string uf, string cidade, string chassi)
-        {
-            String result = String.Empty;
-            MemoryStream stream = new MemoryStream(); // The writer closes this for us
-
-            using (XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8))
-            {
-
-
-
-                //writer.Formatting = Formatting.Indented;
-                //writer.Indentation = 4;
-                writer.WriteStartDocument();
-                writer.WriteStartElement("returnConsultaPlaca");
-                writer.WriteStartElement("resultado");
-                writer.WriteElementString("codigo", cod);
-
-                writer.WriteElementString("mensagem", msg);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("Veiculo");
-                writer.WriteElementString("situacao", situacao);
-                writer.WriteElementString("placa", placa);
-                writer.WriteElementString("marca", marca);
-                writer.WriteElementString("modelo", modelo);
-                writer.WriteElementString("ano_modelo", AnoModelo);
-                writer.WriteElementString("ano_fabricacao", AnoFabricacao);
-                writer.WriteElementString("cor", cor);
-                writer.WriteElementString("estado", uf);
-                writer.WriteElementString("municipio", cidade);
-                writer.WriteElementString("chassi", chassi);
-                writer.WriteEndElement();
-
-                //</soap:Envelope>
-                writer.WriteEndDocument();
-                writer.Flush();
-                writer.Flush();
-
-                StreamReader reader = new StreamReader(stream, Encoding.UTF8, true);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                result += reader.ReadToEnd();
-
-
-            }
-
-            return result;
-        }
         public XmlDocument ConsultarPlaca(string placa)
         {
             XmlDocument document = new XmlDocument();
-              
+            XmlDocument doc = new XmlDocument();
             try
             {
                 
@@ -114,7 +68,7 @@ namespace ConsultaVeiculos
                         byte[] hashmessage = hmacsha1.ComputeHash(messageBytes);
 
                         string hmac2 = ByteToString(hashmessage);
-
+                        //Xml que vai para o servidor do sinesp cidadao
                         StringBuilder postConsultaComParametros = new StringBuilder();
                         postConsultaComParametros.Append("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>");
                         postConsultaComParametros.Append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" >");
@@ -157,7 +111,7 @@ namespace ConsultaVeiculos
 
 
 
-                        XmlDocument doc = new XmlDocument();
+                        
 
                         doc.LoadXml(RemoverAcentos(strRespotaUrlConsultaNFe.ReadToEnd()));
 
@@ -166,80 +120,14 @@ namespace ConsultaVeiculos
 
                         XmlElement elementos = doc.DocumentElement;
 
-                        #region "Xml Response"
-                        string situacao = string.Empty;
-                        string Marca = string.Empty;
-                        string Modelo = string.Empty;
-                        string Cor = string.Empty;
-                        string AnoFabricacao = string.Empty;
-                        string AnoModelo = string.Empty;
-                        string Estado = string.Empty;
-                        string Municipio = string.Empty;
-                        string Chassi = string.Empty;
-                        string Retorno = string.Empty;
-                        foreach (XmlNode nodes in elementos.ChildNodes)
-                        {
-                            foreach (XmlNode nodes_1 in nodes.ChildNodes)
-                            {
-                                foreach (XmlNode nodes_2 in nodes_1.ChildNodes)
-                                {
-                                    foreach (XmlNode nodes_3 in nodes_2.ChildNodes)
-                                    {
-                                        switch (nodes_3.Name.ToUpper())
-                                        {
-                                            case "CODIGOSITUACAO":
-                                                nErros = int.Parse(nodes_3.InnerText);
-                                                break;
-                                            case "MENSAGEMRETORNO":
-                                                Retorno = nodes_3.InnerText;
-                                                break;
-                                            case "SITUACAO":
-                                                situacao = RemoverAcentos(nodes_3.InnerText.ToUpper());
-                                                break;
-                                            case "MODELO":
-                                                string[] MarcaModelo = nodes_3.InnerText.ToUpper().Split('/');
-                                                Marca = MarcaModelo[0].ToString() == "I" ? MarcaModelo[1].Split(' ')[0].ToString() : MarcaModelo[0].ToString();
-                                                Modelo = MarcaModelo[1].ToString();
-                                                break;
-                                            case "COR":
-                                                Cor = nodes_3.InnerText.ToUpper();
-                                                break;
-                                            case "ANO":
-                                                AnoFabricacao = nodes_3.InnerText;
-                                                break;
-                                            case "ANOMODELO":
-                                                AnoModelo = nodes_3.InnerText;
-                                                break;
-                                            case "UF":
-                                                Estado = nodes_3.InnerText.ToUpper();
-                                                break;
-                                            case "MUNICIPIO":
-                                                Municipio = nodes_3.InnerText.ToUpper();
-                                                break;
-                                            case "CHASSI":
-                                                Chassi = nodes_3.InnerText;
-                                                break;
-                                        }
-                                    }
-
-                                }
-
-                            }
-
-                        }
-                        #endregion
-
-
-
-                        document.LoadXml(retorno(nErros.ToString(), Retorno, situacao, placa, Marca, Modelo, AnoModelo, AnoFabricacao, Cor, Estado, Municipio, Chassi));
-
+                       
                    
             }
             catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            return document;
+            return doc;
         }
     }
 }
