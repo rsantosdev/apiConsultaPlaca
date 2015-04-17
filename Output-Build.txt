@@ -1,0 +1,4 @@
+﻿1>------ Rebuild All started: Project: ConsultaVeiculos, Configuration: Release Any CPU ------
+1>F:\Projetos Pessoais\ConsultaPlaca\ConsultaVeiculos\ConsultaPlacaVeiculo.cs(19,13,19,19): warning CS0414: The field 'ConsultaVeiculos.ConsultaPlacaVeiculo.numero' is assigned but its value is never used
+1>  ConsultaVeiculos -> F:\Projetos Pessoais\ConsultaPlaca\ConsultaVeiculos\bin\Release\ConsultaVeiculos.dll
+========== Rebuild All: 1 succeeded, 0 failed, 0 skipped ==========
